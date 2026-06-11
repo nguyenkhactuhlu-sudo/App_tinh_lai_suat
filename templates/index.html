@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần mềm Tính Lãi Suất Chuyên Dụng - KSND</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #001f4d; font-family: 'Segoe UI', Arial, sans-serif; color: #f8f9fa; margin: 0; padding: 0; }
+        
+        .fixed-header-banner { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 130px; 
+            background-color: #002d62;
+            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0), linear-gradient(135deg, #002d62, #001533);
+            background-size: 24px 24px, 100% 100%;
+            border-bottom: 4px solid #d4af37; z-index: 1050; display: flex; align-items: center; padding: 0 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .header-content-wrapper { display: flex; align-items: center; width: 100%; position: relative; height: 100%; }
+        .header-text-container { margin-left: 20px; z-index: 2; }
+        .header-text-container h1 { color: #ffffff; font-weight: bold; font-size: 1.6rem; margin: 0; letter-spacing: 0.5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+        .header-text-container p { color: #d4af37; font-size: 13px; margin: 3px 0 0 0; font-weight: 500; }
+        
+        .header-legal-watermark {
+            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 25%; height: 90%; opacity: 0.09; color: #ffffff;
+            display: flex; align-items: center; justify-content: flex-end;
+            pointer-events: none; z-index: 1;
+        }
+        .header-legal-watermark svg { height: 100%; width: auto; }
+        
+        .app-layout-container { display: flex; margin-top: 150px; padding: 0 25px 25px 25px; gap: 20px; width: 100%; align-items: flex-start; }
+        
+        .law-sidebar-container { width: 360px; min-width: 360px; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .law-sidebar-container.collapsed { width: 55px; min-width: 55px; }
+        .law-sidebar-container.collapsed .law-card { display: none !important; }
+        
+        .btn-gold-toggle {
+            width: 100%; background-color: #d4af37; color: #001f4d; 
+            border: 2px solid #b8860b; font-weight: bold; padding: 8px; 
+            border-radius: 8px; margin-bottom: 10px; transition: all 0.3s ease; 
+            font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-gold-toggle:hover { background-color: #f0cb54; color: #00112c; }
+        
+        .main-content-area { flex-grow: 1; transition: all 0.4s ease; min-width: 0; }
+        
+        .main-card { background-color: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.3); color: #212529; }
+        .law-card { background-color: #002452; padding: 15px; border-radius: 12px; border: 1px solid #003b80; color: #f8f9fa; }
+        
+        .law-accordion-item { background-color: #001a3c; border-left: 4px solid #ffcc00; margin-bottom: 12px; border-radius: 6px; overflow: hidden; }
+        .law-accordion-header { background-color: #002d62; padding: 12px; font-weight: bold; font-size: 13.5px; color: #ffcc00; cursor: pointer; display: flex; justify-content: justify; align-items: center; transition: background 0.2s ease; border-bottom: 1px solid #003b80; text-align: justify; }
+        .law-accordion-header:hover { background-color: #003b80; }
+        .law-accordion-body { padding: 12px; font-size: 12.5px; color: #e9ecef; text-align: justify; line-height: 1.5; white-space: pre-wrap; border-top: 1px solid #001a3c; }
+        .acc-arrow { font-size: 10px; margin-left: auto; color: #ffffff; }
+
+        .gold-badge { background-color: #d4af37 !important; color: #001f4d !important; border: 1px solid #b8860b !important; font-weight: bold !important; }
+        .rate-selector-btn { border: 2px solid #d4af37; background-color: transparent; color: #d4af37; font-weight: bold; }
+        .rate-selector-btn:hover { background-color: #d4af37; color: #001f4d; }
+        .btn-check:checked + .rate-selector-btn { background-color: #d4af37 !important; color: #001f4d !important; }
+        
+        .form-section { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 18px; border-radius: 8px; margin-bottom: 20px; }
+        .dien-giai-box { background-color: #1e222b; color: #a9b2c3; padding: 20px; border-radius: 6px; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13.5px; line-height: 1.6; max-height: 500px; overflow-y: auto; border-left: 4px solid #d4af37; }
+        .phap-ly-note { background-color: #fff3cd; border-left: 6px solid #ffc107; padding: 12px; border-radius: 4px; margin-bottom: 20px; color: #664d03; font-size: 13.5px; }
+        
+        .row-goc { background-color: #e2f0d9 !important; color: #385723; }
+        .row-lth { background-color: #deebf7 !important; color: #1f4e78; }
+        .row-lqh { background-color: #fff2cc !important; color: #7f6000; }
+        .row-lct { background-color: #fce4d6 !important; color: #c65911; }
+        .row-tong { background-color: #f8d7da !important; color: #721c24; font-weight: bold; }
+        
+        .author-footer { text-align: center; margin-top: 40px; padding: 15px 0 35px 0; border-top: 1px solid #003b80; color: #a5bccc; font-size: 14px; }
+        .footer-logo-large { height: 1.6rem; width: auto; vertical-align: middle; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="fixed-header-banner">
+    <div class="header-content-wrapper">
+        <img src="{{ url_for('static', filename='logo_moi.png') }}" alt="Logo Ngành Kiểm Sát" style="height: 80px; width: auto; z-index: 2;">
+        <div class="header-text-container">
+            <h1>PHẦN MỀM HỖ TRỢ TÍNH LÃI SUẤT CHUYÊN DỤNG</h1>
+            <p>Nghiệp vụ kỹ thuật số áp dụng trong ngành Kiểm sát nhân dân</p>
+        </div>
+        <div class="header-legal-watermark">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 4V56M20 16H44M20 16L14 36H26L20 16ZM44 16L38 36H50L44 16ZM12 56H52" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M27 51H37V56H27V51Z" fill="currentColor"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div class="app-layout-container">
+    
+    <div class="law-sidebar-container" id="lawSidebarContainer">
+        <button type="button" id="toggleLawBtn" class="btn-gold-toggle" onclick="toggleLawSidebar()">
+            ◀ THU GỌN TRA CỨU LUẬT
+        </button>
+        
+        <div class="law-card">
+            <h5 class="text-warning border-bottom pb-2 mb-3" style="font-size: 14px; font-weight: bold;">📖 THƯ VIỆN PHÁP LUẬT NGUYÊN VĂN</h5>
+            
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    1. BLDS 2015: Trần lãi suất thỏa thuận (Khoản 1 Điều 468) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"1. Lãi suất vay do các bên thỏa thuận. Trường hợp các bên có thỏa thuận về lãi suất thì lãi suất theo thỏa thuận không được vượt quá 20%/năm của khoản tiền vay, trừ trường hợp luật khác có quy định khác..."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    1. BLDS 2015: Lãi suất trong hạn khi không rõ mức lãi (Khoản 2 Điều 468) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"2. Trường hợp các bên có thỏa thuận về việc trả lãi, nhưng không xác định rõ lãi suất và có tranh chấp về lãi suất thì lãi suất được xác định bằng 50% mức lãi suất giới hạn quy định tại khoản 1 Điều này tại thời điểm trả nợ."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    1. BLDS 2015: Lãi quá hạn & Chậm trả gốc lãi (Điểm a, b Khoản 5 Điều 466) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"5. Trường hợp vay có lãi mà khi đến hạn bên vay không trả hoặc trả không đủ thì bên vay phải trả lãi như sau:
+a) Lãi trên nợ gốc theo lãi suất thỏa thuận trong hạn tương ứng với thời hạn vay mà chưa trả tại thời điểm trả nợ; nếu chậm trả thì còn phải trả lãi theo mức lãi suất quy định tại khoản 2 Điều 468 của Bộ luật này tương ứng với thời gian chậm trả;
+b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo thỏa thuận tương ứng với thời gian chậm trả, trừ trường hợp có thỏa thuận khác."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    1. BLDS 2015: Chậm thực hiện nghĩa vụ trả tiền (Khoản 2 Điều 357) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"2. Lãi suất phát sinh do chậm trả tiền được xác định theo thỏa thuận của các bên nhưng không được vượt quá mức lãi suất giới hạn quy định tại khoản 1 Điều 468 của Bộ luật này; nếu không có thỏa thuận thì thực hiện theo quy định tại khoản 2 Điều 468 của Bộ luật này."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    2. TT 39/2016: Lãi suất cho vay & Trần ngắn hạn (Điều 13) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"Điều 13. Lãi suất cho vay
+1. Tổ chức tín dụng và khách hàng thỏa thuận về mức lãi suất cho vay theo cung cầu vốn thị trường, nhu cầu vay vốn và mức độ tín nhiệm của khách hàng, trừ trường hợp Ngân hàng Nhà nước Việt Nam có quy định về mức lãi suất cho vay tối đa tại khoản 2 Điều này."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    2. TT 39/2016: Lãi suất trong hạn gốc thực tế (Điểm a Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"a) Lãi trên nợ gốc trong hạn chưa trả tương ứng với thời hạn vay chưa trả theo lãi suất cho vay đã thỏa thuận;"</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    2. TT 39/2016: Lãi suất chậm trả tiền lãi tối đa 10% (Điểm b Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"b) Trường hợp khách hàng không trả đúng hạn tiền lãi theo thỏa thuận, thì phải trả lãi chậm trả theo mức lãi suất do tổ chức tín dụng và khách hàng thỏa thuận nhưng không vượt quá 10%/năm tính trên số dư lãi chậm trả tương ứng với thời gian chậm trả;"</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    2. TT 39/2016: Lãi suất quá hạn tối đa 150% (Điểm c Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"c) Trường hợp khoản nợ vay bị chuyển nợ quá hạn, thì khách hàng phải trả lãi trên nợ gốc quá hạn tương ứng với thời gian chậm trả, mức lãi suất áp dụng không vượt quá 150% lãi suất cho vay trong hạn đã thỏa thuận tại thời điểm chuyển nợ quá hạn."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    2. TT 39/2016: Cơ chế điều chỉnh Lãi suất thả nổi (Khoản 3 Điều 13 & Điều 14) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"3. Trường hợp áp dụng lãi suất cho vay thả nổi, tổ chức tín dụng và khách hàng phải thỏa thuận nguyên tắc và các yếu tố để xác định lãi suất thả nổi, thời điểm điều chỉnh lãi suất cho vay. Trường hợp ấn định các yếu tố để xác định lãi suất thả nổi dẫn đến mức lãi suất cho vay vượt quá mức lãi suất cho vay tối đa quy định tại khoản 2 Điều này thì tổ chức tín dụng và khách hàng phải thỏa thuận điều chỉnh mức lãi suất cho vay phù hợp với quy định của Ngân hàng Nhà nước Việt Nam."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    3. NQ 01/2019: Lựa chọn hệ thống pháp luật ưu tiên (Điều 4) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"Điều 4. Xác định lãi suất, phạt vi phạm trong hợp đồng chuyên ngành cụ thể để giải quyết vụ án tranh chấp hợp đồng vay tài sản."</div>
+            </div>
+
+            <div class="law-accordion-item">
+                <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                    3. NQ 01/2019: Phương pháp xác định lãi suất, phạt vi phạm (Điều 5, 6, 7, 8) <span class="acc-arrow">▼</span>
+                </div>
+                <div class="law-accordion-body" style="display: none;">"Hướng dẫn chi tiết về phương pháp áp dụng cách tính toán đối với hợp đồng vay tài sản không phải là hợp đồng tín dụng; hợp đồng tín dụng; xử lý đối với trường hợp có phạt vi phạm và các trường hợp cụ thể phát sinh trong thực tế xét xử."</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="main-card">
+            
+            <div class="phap-ly-note">
+                <strong>Thông tin nghiệp vụ:</strong> Hệ thống tự động bóc tách số ngày cho vay dựa trên cấu trúc lịch của năm cụ thể. Thực thi nghiêm ngặt cơ chế chuyển đổi 360 ngày/năm sang 365 ngày/năm kể từ mốc có hiệu lực của Thông tư số 14/2017/TT-NHNN ngày 01/01/2018 và các quy định khác của pháp luật.
+            </div>
+
+            <form id="interestForm" onsubmit="executeCalculation(event)">
+                
+                <div class="form-section">
+                    <h6 class="mb-3 text-primary font-weight-bold">I. THÔNG TIN VỀ KHOẢN VAY VÀ LÃI SUẤT THỎA THUẬN BAN ĐẦU</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold text-primary">Ngày cho vay (Ngày giải ngân nguồn vốn):</label>
+                            <input type="date" class="form-control border-primary" id="ngay_vay" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Số tiền gốc vay ban đầu (VNĐ):</label>
+                            <input type="number" class="form-control" id="so_tien_vay" value="100000000" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Mức lãi suất trong hạn và đơn vị tính:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" class="form-control" id="lai_suat_nam" value="10" required>
+                                <div class="btn-group" role="group" style="margin-left: 5px;">
+                                    <input type="radio" class="btn-check" name="loai_lai_suat" id="unitNam" value="nam" checked>
+                                    <label class="btn btn-outline-primary rate-selector-btn" for="unitNam">%/năm</label>
+                                    
+                                    <input type="radio" class="btn-check" name="loai_lai_suat" id="unitThang" value="thang">
+                                    <label class="btn btn-outline-primary rate-selector-btn" for="unitThang">%/tháng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- YÊU CẦU 1: Thêm lựa chọn %/năm và %/tháng cho lãi suất quá hạn -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold text-success">Lãi suất thỏa thuận quá hạn (Không bắt buộc):</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" class="form-control border-success" id="lai_suat_thoa_thuan_qh" placeholder="Mặc định bằng 150% lãi trong hạn">
+                                <div class="btn-group" role="group" style="margin-left: 5px;">
+                                    <input type="radio" class="btn-check" name="loai_lai_suat_qh" id="unitQhNam" value="nam" checked>
+                                    <label class="btn btn-outline-success rate-selector-btn" style="border-color: #198754; color: #198754;" for="unitQhNam">%/năm</label>
+                                    
+                                    <input type="radio" class="btn-check" name="loai_lai_suat_qh" id="unitQhThang" value="thang">
+                                    <label class="btn btn-outline-success rate-selector-btn" style="border-color: #198754; color: #198754;" for="unitQhThang">%/tháng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Phương thức trả lãi:</label>
+                            <select class="form-select" id="phuong_thuc">
+                                <option value="du_no_giam_dan">Dư nợ gốc giảm dần</option>
+                                <option value="goc_ban_dau">Tính cố định trên nợ gốc ban đầu</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-weight-bold">Thời hạn vay theo hợp đồng:</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control text-center" id="thoi_han_nam" value="1" min="0" required>
+                                <span class="input-group-text gold-badge">Năm</span>
+                                <input type="number" class="form-control text-center" id="thoi_han_thang" value="0" min="0" required>
+                                <span class="input-group-text gold-badge">Tháng</span>
+                                <input type="number" class="form-control text-center" id="thoi_han_ngay" value="0" min="0" required>
+                                <span class="input-group-text gold-badge">Ngày</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YÊU CẦU 2: Bỏ required khỏi các input trong phần II -->
+                <div class="form-section" style="border-left: 4px solid #d4af37;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="m-0 text-dark font-weight-bold">II. BIẾN ĐỘNG LÃI SUẤT THẢ NỔI THEO TỪNG THỜI KỲ <span class="text-muted fw-normal" style="font-size: 12px;">(Không bắt buộc)</span></h6>
+                        <button type="button" class="btn btn-sm btn-dark" onclick="addFloatingRateRow()">+ Thêm thời kỳ thả nổi</button>
+                    </div>
+                    <div id="floating-container"></div>
+                </div>
+
+                <!-- YÊU CẦU 2: Bỏ required khỏi các input trong phần III -->
+                <div class="form-section" style="border-left: 4px solid #198754;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="m-0 text-dark font-weight-bold">III. NHẬT KÝ ĐÃ TRẢ TRƯỚC MỘT PHẦN GỐC / LÃI (ĐỐI TRỪ CÔNG NỢ) <span class="text-muted fw-normal" style="font-size: 12px;">(Không bắt buộc)</span></h6>
+                        <button type="button" class="btn btn-sm btn-success" onclick="addPaymentRow()">+ Thêm đợt đối trừ công nợ</button>
+                    </div>
+                    <div id="payment-container"></div>
+                </div>
+
+                <div class="form-section">
+                    <!-- YÊU CẦU 3: Sửa text label -->
+                    <h6 class="mb-3 text-primary font-weight-bold">IV. NGÀY TẤT TOÁN KHOẢN VAY (NGÀY XÉT XỬ)</h6>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label font-weight-bold text-danger">Ngày chốt nợ gốc và lãi (Ngày tất toán / Ngày xét xử):</label>
+                            <input type="date" class="form-control border-danger" id="ngay_tra_thuc_te" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning py-2 px-3 mb-3 text-center" style="font-size: 13.5px; border-left: 4px solid #ffc107; background-color: #fff3cd; color: #664d03; border-radius: 6px;">
+                    ⚠️ <strong>Khuyến cáo:</strong> Kết quả tính toán trên phần mềm chỉ mang tính chất tham khảo nghiệp vụ, không thay thế cho các quyết định tố tụng chính thức của cơ quan có thẩm quyền.
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold py-2 shadow-sm" style="background-color: #002d62; border-color:#d4af37; font-size:1.1rem;">📊 TÍNH TOÁN & BÁO CÁO</button>
+            </form>
+
+            <div id="resultBlock" class="d-none mt-4">
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="m-0" style="font-size: 1.3rem; color: #002d62; font-weight: bold;">BÁO CÁO CHI TIẾT NGHĨA VỤ TÀI CHÍNH</h3>
+                    <a id="excelDownloadBtn" href="#" class="btn btn-sm btn-success" download>📥 Tải Bảng Tính Excel Phụ Lục</a>
+                </div>
+                
+                <p class="text-muted small mb-2">Tổng số ngày chạy mô phỏng kiểm sát: <strong id="lblTotalDays">0</strong> ngày.</p>
+
+                <table class="table table-bordered text-end align-middle small shadow-sm">
+                    <thead class="table-dark text-center" style="background-color: #002d62;">
+                        <tr>
+                            <th class="text-start">Danh mục nghĩa vụ</th>
+                            <th>Bình quân / Tháng</th>
+                            <th>Bình quân / Năm</th>
+                            <th>Tổng dư nợ tính đến ngày chốt nợ (Ngày xét xử)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-goc">
+                            <td class="text-start">1. Dư nợ gốc còn lại (Đã đối trừ)</td>
+                            <td id="cell_goc_m">0 VNĐ</td><td id="cell_goc_y">0 VNĐ</td><td id="cell_goc_t" class="fw-bold">0 VNĐ</td>
+                        </tr>
+                        <tr class="row-lth">
+                            <td class="text-start">2. Lãi trong hạn tồn đọng</td>
+                            <td id="cell_lth_m">0 VNĐ</td><td id="cell_lth_y">0 VNĐ</td><td id="cell_lth_t">0 VNĐ</td>
+                        </tr>
+                        <tr class="row-lqh">
+                            <td class="text-start">3. Lãi quá hạn tích lũy (trên gốc)</td>
+                            <td id="cell_lqh_m">0 VNĐ</td><td id="cell_lqh_y">0 VNĐ</td><td id="cell_lqh_t">0 VNĐ</td>
+                        </tr>
+                        <tr class="row-lct">
+                            <td class="text-start">4. Lãi chậm trả tích lũy (trên lãi)</td>
+                            <td id="cell_lct_m">0 VNĐ</td><td id="cell_lct_y">0 VNĐ</td><td id="cell_lct_t">0 VNĐ</td>
+                        </tr>
+                        <tr class="row-tong">
+                            <td class="text-start text-uppercase">Tổng nghĩa vụ tài chính chốt sau đối trừ</td>
+                            <td id="cell_tong_m">0 VNĐ</td><td id="cell_tong_y">0 VNĐ</td><td id="cell_tong_t">0 VNĐ</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5 class="mt-3 text-dark font-weight-bold" style="font-size: 1rem;">BÁO CÁO DIỄN GIẢI CHI TIẾT (ĐẾN ĐƠN VỊ THÁNG)</h5>
+                <div class="dien-giai-box" id="dienGiaiText"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="author-footer">
+                <span style="color: #ffcc00; font-weight: 500;">
+                    Phát triển bởi: Nguyễn Khắc Tú - Viện KSND khu vực 5 - Bắc Ninh
+                </span>
+                <img src="{{ url_for('static', filename='logo_moi.png') }}" alt="Logo Tác Giả" class="footer-logo-large">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleLawItem(element) {
+        const body = element.nextElementSibling;
+        const arrow = element.querySelector('.acc-arrow');
+        if (body.style.display === "none" || body.style.display === "") {
+            body.style.display = "block";
+            if (arrow) arrow.innerText = "▴";
+        } else {
+            body.style.display = "none";
+            if (arrow) arrow.innerText = "▼";
+        }
+    }
+
+    function toggleLawSidebar() {
+        const container = document.getElementById('lawSidebarContainer');
+        const btn = document.getElementById('toggleLawBtn');
+        container.classList.toggle('collapsed');
+        if (container.classList.contains('collapsed')) {
+            btn.innerHTML = "LUẬT ▶";
+        } else {
+            btn.innerHTML = "◀ THU GỌN TRA CỨU LUẬT";
+        }
+    }
+
+    // YÊU CẦU 2: Bỏ thuộc tính required trong các hàng được thêm động ở phần II và III
+    function addFloatingRateRow() {
+        const container = document.getElementById('floating-container');
+        const div = document.createElement('div');
+        div.className = 'row g-2 mb-2 align-items-center floating-row';
+        div.innerHTML = `
+            <div class="col-md-3"><input type="number" step="0.01" class="form-control form-control-sm tn-rate" placeholder="Mức lãi suất"></div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm tn-unit">
+                    <option value="nam">%/năm</option>
+                    <option value="thang">%/tháng</option>
+                </select>
+            </div>
+            <div class="col-md-3"><input type="date" class="form-control form-control-sm tn-from"></div>
+            <div class="col-md-3"><input type="date" class="form-control form-control-sm tn-to"></div>
+            <div class="col-md-1"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">X</button></div>
+        `;
+        container.appendChild(div);
+    }
+
+    function addPaymentRow() {
+        const container = document.getElementById('payment-container');
+        const div = document.createElement('div');
+        div.className = 'row g-2 mb-2 align-items-center payment-row';
+        div.innerHTML = `
+            <div class="col-md-4"><input type="date" class="form-control form-control-sm tt-date"></div>
+            <div class="col-md-4"><input type="number" class="form-control form-control-sm tt-goc" placeholder="Tiền gốc trả (VNĐ)"></div>
+            <div class="col-md-3"><input type="number" class="form-control form-control-sm tt-lai" placeholder="Tiền lãi trả (VNĐ)"></div>
+            <div class="col-md-1"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.parentElement.parentElement.remove()">X</button></div>
+        `;
+        container.appendChild(div);
+    }
+
+    function formatVND(val) {
+        return parseFloat(val).toLocaleString('vi-VN') + " VNĐ";
+    }
+
+    function executeCalculation(event) {
+        event.preventDefault();
+
+        const list_tha_noi = [];
+        document.querySelectorAll('.floating-row').forEach(row => {
+            list_tha_noi.push({
+                rate: row.querySelector('.tn-rate').value,
+                unit: row.querySelector('.tn-unit').value,
+                from: row.querySelector('.tn-from').value,
+                to: row.querySelector('.tn-to').value
+            });
+        });
+
+        const list_thanh_toan = [];
+        document.querySelectorAll('.payment-row').forEach(row => {
+            list_thanh_toan.push({
+                date: row.querySelector('.tt-date').value,
+                goc: row.querySelector('.tt-goc').value,
+                lai: row.querySelector('.tt-lai').value
+            });
+        });
+
+        // YÊU CẦU 1: Gửi thêm đơn vị lãi suất quá hạn lên server
+        const payload = {
+            so_tien_vay: document.getElementById('so_tien_vay').value,
+            lai_suat_nam: document.getElementById('lai_suat_nam').value,
+            loai_lai_suat: document.querySelector('input[name="loai_lai_suat"]:checked').value,
+            lai_suat_thoa_thuan_qh: document.getElementById('lai_suat_thoa_thuan_qh').value,
+            loai_lai_suat_qh: document.querySelector('input[name="loai_lai_suat_qh"]:checked').value,
+            phuong_thuc: document.getElementById('phuong_thuc').value,
+            thoi_han_nam: document.getElementById('thoi_han_nam').value,
+            thoi_han_thang: document.getElementById('thoi_han_thang').value,
+            thoi_han_ngay: document.getElementById('thoi_han_ngay').value,
+            ngay_vay: document.getElementById('ngay_vay').value,
+            ngay_tra_thuc_te: document.getElementById('ngay_tra_thuc_te').value,
+            list_tha_noi: list_tha_noi,
+            list_thanh_toan: list_thanh_toan
+        };
+
+        fetch('/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                const resData = response.data;
+                const matrix = resData.matrix;
+                
+                document.getElementById('lblTotalDays').innerText = resData.so_ngay_thuc_te;
+                
+                document.getElementById('cell_goc_m').innerText = formatVND(matrix.goc.thang);
+                document.getElementById('cell_goc_y').innerText = formatVND(matrix.goc.nam);
+                document.getElementById('cell_goc_t').innerText = formatVND(matrix.goc.tong);
+                
+                document.getElementById('cell_lth_m').innerText = formatVND(matrix.lth.thang);
+                document.getElementById('cell_lth_y').innerText = formatVND(matrix.lth.nam);
+                document.getElementById('cell_lth_t').innerText = formatVND(matrix.lth.tong);
+                
+                document.getElementById('cell_lqh_m').innerText = formatVND(matrix.lqh.thang);
+                document.getElementById('cell_lqh_y').innerText = formatVND(matrix.lqh.nam);
+                document.getElementById('cell_lqh_t').innerText = formatVND(matrix.lqh.tong);
+                
+                document.getElementById('cell_lct_m').innerText = formatVND(matrix.lct.thang);
+                document.getElementById('cell_lct_y').innerText = formatVND(matrix.lct.nam);
+                document.getElementById('cell_lct_t').innerText = formatVND(matrix.lct.tong);
+                
+                document.getElementById('cell_tong_m').innerText = formatVND(matrix.tong.thang);
+                document.getElementById('cell_tong_y').innerText = formatVND(matrix.tong.nam);
+                document.getElementById('cell_tong_t').innerText = formatVND(matrix.tong.tong);
+                
+                document.getElementById('dienGiaiText').innerText = resData.dien_giai;
+                document.getElementById('excelDownloadBtn').href = resData.excel_url;
+                
+                document.getElementById('resultBlock').classList.remove('d-none');
+                document.getElementById('resultBlock').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert("Lỗi tính toán hệ thống: " + response.error);
+            }
+        })
+        .catch(err => {
+            alert("Lỗi kết nối máy chủ API tính toán.");
+            console.error(err);
+        });
+    }
+</script>
+</body>
+</html>
