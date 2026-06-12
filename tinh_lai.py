@@ -3,14 +3,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay, lai_suat_nhap, loai_lai_suat, 
-                      lai_suat_thoa_thuan_qh, loai_lai_suat_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, 
+                      lai_suat_thoa_thuan_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, 
                       list_tha_noi=None, list_thanh_toan=None):
-    
-    so_tien_vay = float(so_tien_vay or 0)
-    thoi_han_nam = int(thoi_han_nam or 0)
-    thoi_han_thang = int(thoi_han_thang or 0)
-    thoi_han_ngay = int(thoi_han_ngay or 0)
-    lai_suat_nhap = float(lai_suat_nhap or 0)
     
     ngay_vay_dt = datetime.strptime(ngay_vay, '%Y-%m-%d')
     ngay_tra_dt = datetime.strptime(ngay_tra_thuc_te, '%Y-%m-%d')
@@ -36,17 +30,15 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
             break
         except ValueError:
             ngay_tam -= 1
-            
     ngay_dao_han_dt += timedelta(days=thoi_han_ngay)
-    so_ngay_quy_dinh = abs((ngay_dao_han_dt - ngay_vay_dt).days)
+    so_ngay_quy_dinh = (ngay_dao_han_dt - ngay_vay_dt).days
     
     tha_noi_processed = []
     if list_tha_noi:
         for tn in list_tha_noi:
             if tn.get('rate') and tn.get('from') and tn.get('to'):
                 r = float(tn['rate'])
-                if tn.get('unit') == 'thang': 
-                    r *= 12
+                if tn.get('unit') == 'thang': r *= 12
                 tha_noi_processed.append({
                     'rate': r,
                     'from': datetime.strptime(tn['from'], '%Y-%m-%d'),
@@ -75,15 +67,13 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
     lai_trong_han_chua_tra = 0.0
     
     dien_giai_text = "--- DIỄN GIẢI DÒNG TIỀN VÀ ĐỐI TRỪ NỢ ---\n"
-    dien_giai_text += f"Ban đầu: Gốc vay = {so_tien_vay:,.0f}đ. Kỳ hạn: {ngay_vay_dt.strftime('%d/%m/%Y')} đến {ngay_dao_han_dt.strftime('%d/%m/%Y')} ({so_ngay_quy_dinh} ngày).\n\n"
+    dien_giai_text += f" Ban đầu: Nợ gốc vay = {so_tien_vay:,.0f} VNĐ. Kỳ hạn: Từ {ngay_vay_dt.strftime('%d/%m/%Y')} đến {ngay_dao_han_dt.strftime('%d/%m/%Y')} ({so_ngay_quy_dinh} ngày).\n\n"
     
     base_rate_nam = lai_suat_nhap * 12 if loai_lai_suat == 'thang' else lai_suat_nhap
+    curr_date = ngay_vay_dt
+    total_days_simulation = (ngay_tra_dt - ngay_vay_dt).days
     
-    curr_date = min(ngay_vay_dt, ngay_tra_dt)
-    end_date = max(ngay_vay_dt, ngay_tra_dt)
-    total_days_simulation = abs((end_date - curr_date).days)
-    
-    while curr_date < end_date:
+    while curr_date < ngay_tra_dt:
         day_next = curr_date + timedelta(days=1)
         
         active_rate = base_rate_nam
@@ -92,7 +82,6 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
                 active_rate = tn['rate']
                 break
                 
-        # Bộ lọc kiểm soát trần pháp luật (Tối đa 20%/năm cho trong hạn)
         if active_rate > 20.0:
             active_rate = 20.0
             
@@ -107,15 +96,10 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
         else:
             if lai_suat_thoa_thuan_qh:
                 rate_qh = float(lai_suat_thoa_thuan_qh)
-                if loai_lai_suat_qh == 'thang':
-                    rate_qh *= 12
-                # Bộ lọc trần quá hạn (Tối đa 150% của trần trong hạn = 30%/năm)
-                if rate_qh > 30.0: 
-                    rate_qh = 30.0
+                if rate_qh > 30.0: rate_qh = 30.0
             else:
                 rate_qh = active_rate * 1.5
-                if rate_qh > 30.0: 
-                    rate_qh = 30.0
+                if rate_qh > 30.0: rate_qh = 30.0
                 
             daily_lqh = du_no_goc_hien_tai * ((rate_qh / 100) / days_in_year)
             tong_lai_qua_han_tich_luy += daily_lqh
@@ -134,54 +118,47 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
             du_no_goc_hien_tai = max(0.0, du_no_goc_hien_tai - g_paid)
             lai_trong_han_chua_tra = max(0.0, lai_trong_han_chua_tra - l_paid)
             
-            dien_giai_text += f"Mốc {day_next.strftime('%d/%m/%Y')}: Khấu trừ giữa kỳ -> Gốc giảm còn {du_no_goc_hien_tai:,.0f}đ; Lãi giảm còn {lai_trong_han_chua_tra:,.0f}đ.\n"
+            dien_giai_text += f" Mốc {day_next.strftime('%d/%m/%Y')}: Đương sự thanh toán đợt giữa kỳ -> Khấu trừ gốc giảm từ {old_goc:,.0f}đ xuống {du_no_goc_hien_tai:,.0f}đ; Khấu trừ lãi tồn đọng từ {old_lai_th:,.0f}đ xuống {lai_trong_han_chua_tra:,.0f}đ.\n"
 
         curr_date = day_next
 
-    dien_giai_text += f"\nKết quả chốt dữ liệu kiểm sát:\n"
-    dien_giai_text += f"Tổng số ngày chạy mô phỏng: {total_days_simulation} ngày.\n"
-    dien_giai_text += f"Dư nợ gốc còn lại sau đối trừ: {du_no_goc_hien_tai:,.0f} VNĐ\n"
-    dien_giai_text += f"Lãi trong hạn chưa trả còn lại: {lai_trong_han_chua_tra:,.0f} VNĐ\n"
-    dien_giai_text += f"Lãi quá hạn phát sinh tính trên nợ gốc: {tong_lai_qua_han_tich_luy:,.0f} VNĐ\n"
-    dien_giai_text += f"Lãi chậm trả phát sinh tính trên tiền lãi: {tong_lai_cham_tra_tich_luy:,.0f} VNĐ\n"
+    dien_giai_text += f"\n Kết quả chốt dữ liệu kiểm sát:\n"
+    dien_giai_text += f"   - Tổng số ngày chạy mô phỏng: {total_days_simulation} ngày.\n"
+    dien_giai_text += f"   - Dư nợ gốc còn lại sau đối trừ: {du_no_goc_hien_tai:,.0f} VNĐ\n"
+    dien_giai_text += f"   - Lãi trong hạn chưa trả còn lại: {lai_trong_han_chua_tra:,.0f} VNĐ\n"
+    dien_giai_text += f"   - Lãi quá hạn phát sinh tính trên nợ gốc: {tong_lai_qua_han_tich_luy:,.0f} VNĐ\n"
+    dien_giai_text += f"   - Lãi chậm trả phát sinh tính trên tiền lãi: {tong_lai_cham_tra_tich_luy:,.0f} VNĐ\n"
 
     tong_cong_nghia_vu = du_no_goc_hien_tai + lai_trong_han_chua_tra + tong_lai_qua_han_tich_luy + tong_lai_cham_tra_tich_luy
     he_so_nam = max(1, total_days_simulation) / 365.0
     he_so_thang = max(1, total_days_simulation) / 30.4167
     
-    # Cập nhật mảng kết quả: Hàng tổng không chia đều nữa, dồn xuống mảng Trung Bình
     matrix_data = {
         "goc": {"thang": du_no_goc_hien_tai / he_so_thang, "nam": du_no_goc_hien_tai / he_so_nam, "tong": du_no_goc_hien_tai},
         "lth": {"thang": lai_trong_han_chua_tra / he_so_thang, "nam": lai_trong_han_chua_tra / he_so_nam, "tong": lai_trong_han_chua_tra},
         "lqh": {"thang": tong_lai_qua_han_tich_luy / he_so_thang, "nam": tong_lai_qua_han_tich_luy / he_so_nam, "tong": tong_lai_qua_han_tich_luy},
         "lct": {"thang": tong_lai_cham_tra_tich_luy / he_so_thang, "nam": tong_lai_cham_tra_tich_luy / he_so_nam, "tong": tong_lai_cham_tra_tich_luy},
-        "tong": {"tong": tong_cong_nghia_vu},
-        "tb_ky_han": {"thang": tong_cong_nghia_vu / he_so_thang, "nam": tong_cong_nghia_vu / he_so_nam}
+        "tong": {"thang": tong_cong_nghia_vu / he_so_thang, "nam": tong_cong_nghia_vu / he_so_nam, "tong": tong_cong_nghia_vu}
     }
     
+    # ITEM 3: SỬA LỖI XUẤT FILE EXCEL ĐỒNG BỘ HOÀN TOÀN VỚI DIỄN GIẢI KẾT QUẢ VÀ THÔNG TIN NHẬP VÀO
     excel_filename = "Bao_cao_dong_tien_kiem_sat.xlsx"
     os.makedirs("static", exist_ok=True)
     excel_filepath = os.path.join("static", excel_filename)
     
-    ls_qh_display = f"{lai_suat_thoa_thuan_qh} %/{loai_lai_suat_qh}" if lai_suat_thoa_thuan_qh else "150% lãi trong hạn"
-    
-    t1 = "--- THÔNG TIN KHOẢN VAY BAN ĐẦU ---"
-    t2 = "--- DIỄN GIẢI QUÁ TRÌNH TÍNH TOÁN ---"
-    t3 = "--- KẾT QUẢ CHỐT ĐẾN NGÀY XÉT XỬ ---"
-    
     excel_rows = [
-        {"Hạng mục": t1, "Nội dung chi tiết": ""},
+        {"Hạng mục": "--- THÔNG TIN VỀ KHOẢN VAY VÀ LÃI SUẤT THỎA THUẬN BAN ĐẦU ---", "Nội dung chi tiết": ""},
         {"Hạng mục": "Số tiền gốc vay ban đầu", "Nội dung chi tiết": f"{so_tien_vay:,.0f} VNĐ"},
-        {"Hạng mục": "Ngày cho vay", "Nội dung chi tiết": ngay_vay_dt.strftime('%d/%m/%Y')},
-        {"Hạng mục": "Ngày tất toán (Xét xử)", "Nội dung chi tiết": ngay_tra_dt.strftime('%d/%m/%Y')},
-        {"Hạng mục": "Mức lãi suất trong hạn", "Nội dung chi tiết": f"{lai_suat_nhap} %/{loai_lai_suat}"},
-        {"Hạng mục": "Lãi suất thỏa thuận quá hạn", "Nội dung chi tiết": ls_qh_display},
-        {"Hạng mục": "Phương thức tính toán", "Nội dung chi tiết": "Dư nợ giảm dần" if phuong_thuc == "du_no_giam_dan" else "Gốc cố định"},
-        {"Hạng mục": "Thời hạn vay hợp đồng", "Nội dung chi tiết": f"{thoi_han_nam} Năm, {thoi_han_thang} Tháng, {thoi_han_ngay} Ngày"},
+        {"Hạng mục": "Ngày cho vay (Giải ngân nguồn vốn)", "Nội dung chi tiết": ngay_vay_dt.strftime('%d/%m/%Y')},
+        {"Hạng mục": "Ngày tất toán khoản vay (Ngày xét xử)", "Nội dung chi tiết": ngay_tra_dt.strftime('%d/%m/%Y')},
+        {"Hạng mục": "Mức lãi suất trong hạn nhập vào", "Nội dung chi tiết": f"{lai_suat_nhap} %/{loai_lai_suat}"},
+        {"Hạng mục": "Lãi suất thỏa thuận quá hạn", "Nội dung chi tiết": f"{lai_suat_thoa_thuan_qh if lai_suat_thoa_thuan_qh else 'Mặc định bằng 150% lãi trong hạn'} %/năm"},
+        {"Hạng mục": "Phương thức tính toán", "Nội dung chi tiết": "Dư nợ gốc giảm dần" if phuong_thuc == "du_no_giam_dan" else "Tính cố định trên nợ gốc ban đầu"},
+        {"Hạng mục": "Thời hạn vay theo hợp đồng", "Nội dung chi tiết": f"{thoi_han_nam} Năm, {thoi_han_thang} Tháng, {thoi_han_ngay} Ngày"},
         {"Hạng mục": "Ngày đáo hạn dự kiến", "Nội dung chi tiết": ngay_dao_han_dt.strftime('%d/%m/%Y')},
-        {"Hạng mục": "Tổng số ngày thực tế", "Nội dung chi tiết": f"{total_days_simulation} ngày"},
+        {"Hạng mục": "Tổng số ngày tính toán thực tế", "Nội dung chi tiết": f"{total_days_simulation} ngày"},
         {"Hạng mục": "", "Nội dung chi tiết": ""},
-        {"Hạng mục": t2, "Nội dung chi tiết": ""}
+        {"Hạng mục": "--- DIỄN GIẢI QUÁ TRÌNH TÍNH TOÁN CHI TIẾT THEO GIAI ĐOẠN ---", "Nội dung chi tiết": ""}
     ]
     
     for line in dien_giai_text.split("\n"):
@@ -190,12 +167,12 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
             
     excel_rows.extend([
         {"Hạng mục": "", "Nội dung chi tiết": ""},
-        {"Hạng mục": t3, "Nội dung chi tiết": ""},
-        {"Hạng mục": "1. Dư nợ gốc còn lại", "Nội dung chi tiết": f"{du_no_goc_hien_tai:,.0f} VNĐ"},
+        {"Hạng mục": "--- KẾT QUẢ CHI TIẾT CHỐT DỮ LIỆU ĐẾN NGÀY XÉT XỬ ---", "Nội dung chi tiết": ""},
+        {"Hạng mục": "1. Dư nợ gốc còn lại (Đã đối trừ)", "Nội dung chi tiết": f"{du_no_goc_hien_tai:,.0f} VNĐ"},
         {"Hạng mục": "2. Lãi trong hạn tồn đọng", "Nội dung chi tiết": f"{lai_trong_han_chua_tra:,.0f} VNĐ"},
-        {"Hạng mục": "3. Lãi quá hạn tích lũy", "Nội dung chi tiết": f"{tong_lai_qua_han_tich_luy:,.0f} VNĐ"},
-        {"Hạng mục": "4. Lãi chậm trả tích lũy", "Nội dung chi tiết": f"{tong_lai_cham_tra_tich_luy:,.0f} VNĐ"},
-        {"Hạng mục": "TỔNG CỘNG NGHĨA VỤ", "Nội dung chi tiết": f"{tong_cong_nghia_vu:,.0f} VNĐ"}
+        {"Hạng mục": "3. Lãi quá hạn tích lũy (trên gốc)", "Nội dung chi tiết": f"{tong_lai_qua_han_tich_luy:,.0f} VNĐ"},
+        {"Hạng mục": "4. Lãi chậm trả tích lũy (trên lãi)", "Nội dung chi tiết": f"{tong_lai_cham_tra_tich_luy:,.0f} VNĐ"},
+        {"Hạng mục": "TỔNG CỘNG NGHĨA VỤ TÀI CHÍNH CHỐT SAU ĐỐI TRỪ", "Nội dung chi tiết": f"{tong_cong_nghia_vu:,.0f} VNĐ"}
     ])
     
     pd.DataFrame(excel_rows).to_excel(excel_filepath, index=False)
