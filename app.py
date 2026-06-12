@@ -18,6 +18,7 @@ def calculate():
         lai_suat_nam = float(data.get('lai_suat_nam', 0))
         loai_lai_suat = data.get('loai_lai_suat', 'nam')
         lai_suat_thoa_thuan_qh = data.get('lai_suat_thoa_thuan_qh', '')
+        loai_lai_suat_qh = data.get('loai_lai_suat_qh', 'nam')
         phuong_thuc = data.get('phuong_thuc', 'du_no_giam_dan')
         ngay_vay = data.get('ngay_vay', '')
         ngay_tra_thuc_te = data.get('ngay_tra_thuc_te', '')
@@ -30,7 +31,7 @@ def calculate():
 
         ket_qua = tinh_toan_chi_tiet(
             so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay, lai_suat_nam, loai_lai_suat,
-            lai_suat_thoa_thuan_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, list_tha_noi, list_thanh_toan
+            lai_suat_thoa_thuan_qh, loai_lai_suat_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, list_tha_noi, list_thanh_toan
         )
         
         return jsonify({"success": True, "data": ket_qua})

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay, lai_suat_nhap, loai_lai_suat, 
-                      lai_suat_thoa_thuan_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, 
+                      lai_suat_thoa_thuan_qh, loai_lai_suat_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, 
                       list_tha_noi=None, list_thanh_toan=None):
     
     ngay_vay_dt = datetime.strptime(ngay_vay, '%Y-%m-%d')
@@ -96,6 +96,8 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
         else:
             if lai_suat_thoa_thuan_qh:
                 rate_qh = float(lai_suat_thoa_thuan_qh)
+                if loai_lai_suat_qh == 'thang':
+                    rate_qh = rate_qh * 12
                 if rate_qh > 30.0: rate_qh = 30.0
             else:
                 rate_qh = active_rate * 1.5
@@ -133,15 +135,18 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
     he_so_nam = max(1, total_days_simulation) / 365.0
     he_so_thang = max(1, total_days_simulation) / 30.4167
     
+    trung_binh_thang = tong_cong_nghia_vu / he_so_thang if total_days_simulation > 0 else 0
+    trung_binh_nam = tong_cong_nghia_vu / he_so_nam if total_days_simulation > 0 else 0
+
     matrix_data = {
         "goc": {"thang": du_no_goc_hien_tai / he_so_thang, "nam": du_no_goc_hien_tai / he_so_nam, "tong": du_no_goc_hien_tai},
         "lth": {"thang": lai_trong_han_chua_tra / he_so_thang, "nam": lai_trong_han_chua_tra / he_so_nam, "tong": lai_trong_han_chua_tra},
         "lqh": {"thang": tong_lai_qua_han_tich_luy / he_so_thang, "nam": tong_lai_qua_han_tich_luy / he_so_nam, "tong": tong_lai_qua_han_tich_luy},
         "lct": {"thang": tong_lai_cham_tra_tich_luy / he_so_thang, "nam": tong_lai_cham_tra_tich_luy / he_so_nam, "tong": tong_lai_cham_tra_tich_luy},
-        "tong": {"thang": tong_cong_nghia_vu / he_so_thang, "nam": tong_cong_nghia_vu / he_so_nam, "tong": tong_cong_nghia_vu}
+        "trung_binh_ky_han": {"thang": trung_binh_thang, "nam": trung_binh_nam},
+        "tong": {"thang": 0, "nam": 0, "tong": tong_cong_nghia_vu}
     }
     
-    # ITEM 3: SỬA LỖI XUẤT FILE EXCEL ĐỒNG BỘ HOÀN TOÀN VỚI DIỄN GIẢI KẾT QUẢ VÀ THÔNG TIN NHẬP VÀO
     excel_filename = "Bao_cao_dong_tien_kiem_sat.xlsx"
     os.makedirs("static", exist_ok=True)
     excel_filepath = os.path.join("static", excel_filename)
@@ -152,7 +157,7 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
         {"Hạng mục": "Ngày cho vay (Giải ngân nguồn vốn)", "Nội dung chi tiết": ngay_vay_dt.strftime('%d/%m/%Y')},
         {"Hạng mục": "Ngày tất toán khoản vay (Ngày xét xử)", "Nội dung chi tiết": ngay_tra_dt.strftime('%d/%m/%Y')},
         {"Hạng mục": "Mức lãi suất trong hạn nhập vào", "Nội dung chi tiết": f"{lai_suat_nhap} %/{loai_lai_suat}"},
-        {"Hạng mục": "Lãi suất thỏa thuận quá hạn", "Nội dung chi tiết": f"{lai_suat_thoa_thuan_qh if lai_suat_thoa_thuan_qh else 'Mặc định bằng 150% lãi trong hạn'} %/năm"},
+        {"Hạng mục": "Lãi suất thỏa thuận quá hạn", "Nội dung chi tiết": f"{lai_suat_thoa_thuan_qh if lai_suat_thoa_thuan_qh else 'Mặc định bằng 150% lãi trong hạn'} %/{loai_lai_suat_qh if lai_suat_thoa_thuan_qh else 'năm'}"},
         {"Hạng mục": "Phương thức tính toán", "Nội dung chi tiết": "Dư nợ gốc giảm dần" if phuong_thuc == "du_no_giam_dan" else "Tính cố định trên nợ gốc ban đầu"},
         {"Hạng mục": "Thời hạn vay theo hợp đồng", "Nội dung chi tiết": f"{thoi_han_nam} Năm, {thoi_han_thang} Tháng, {thoi_han_ngay} Ngày"},
         {"Hạng mục": "Ngày đáo hạn dự kiến", "Nội dung chi tiết": ngay_dao_han_dt.strftime('%d/%m/%Y')},
@@ -172,6 +177,8 @@ def tinh_toan_chi_tiet(so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay,
         {"Hạng mục": "2. Lãi trong hạn tồn đọng", "Nội dung chi tiết": f"{lai_trong_han_chua_tra:,.0f} VNĐ"},
         {"Hạng mục": "3. Lãi quá hạn tích lũy (trên gốc)", "Nội dung chi tiết": f"{tong_lai_qua_han_tich_luy:,.0f} VNĐ"},
         {"Hạng mục": "4. Lãi chậm trả tích lũy (trên lãi)", "Nội dung chi tiết": f"{tong_lai_cham_tra_tich_luy:,.0f} VNĐ"},
+        {"Hạng mục": "Trung bình nghĩa vụ phát sinh / tháng", "Nội dung chi tiết": f"{trung_binh_thang:,.0f} VNĐ"},
+        {"Hạng mục": "Trung bình nghĩa vụ phát sinh / năm", "Nội dung chi tiết": f"{trung_binh_nam:,.0f} VNĐ"},
         {"Hạng mục": "TỔNG CỘNG NGHĨA VỤ TÀI CHÍNH CHỐT SAU ĐỐI TRỪ", "Nội dung chi tiết": f"{tong_cong_nghia_vu:,.0f} VNĐ"}
     ])
     
