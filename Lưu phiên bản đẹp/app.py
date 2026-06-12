@@ -18,10 +18,7 @@ def calculate():
         lai_suat_nam = float(data.get('lai_suat_nam', 0))
         loai_lai_suat = data.get('loai_lai_suat', 'nam')
         lai_suat_thoa_thuan_qh = data.get('lai_suat_thoa_thuan_qh', '')
-        
-        # LẤY THÊM ĐƠN VỊ LÃI SUẤT QUÁ HẠN TỪ FRONTEND
-        loai_lai_suat_qh = data.get('loai_lai_suat_qh', 'nam') 
-        
+        loai_lai_suat_qh = data.get('loai_lai_suat_qh', 'nam')
         phuong_thuc = data.get('phuong_thuc', 'du_no_giam_dan')
         ngay_vay = data.get('ngay_vay', '')
         ngay_tra_thuc_te = data.get('ngay_tra_thuc_te', '')
@@ -32,7 +29,6 @@ def calculate():
         if not ngay_vay or not ngay_tra_thuc_te:
             return jsonify({"success": False, "error": "Hệ thống yêu cầu nhập đầy đủ Ngày cho vay và Ngày chốt nợ."})
 
-        # TRUYỀN THÊM THAM SỐ loai_lai_suat_qh VÀO HÀM (VỊ TRÍ THỨ 8)
         ket_qua = tinh_toan_chi_tiet(
             so_tien_vay, thoi_han_nam, thoi_han_thang, thoi_han_ngay, lai_suat_nam, loai_lai_suat,
             lai_suat_thoa_thuan_qh, loai_lai_suat_qh, phuong_thuc, ngay_vay, ngay_tra_thuc_te, list_tha_noi, list_thanh_toan
