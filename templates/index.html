@@ -29,11 +29,16 @@
         }
         .header-legal-watermark svg { height: 100%; width: auto; }
         
-        .app-layout-container { display: flex; margin-top: 150px; padding: 0 25px 25px 25px; gap: 20px; width: 100%; align-items: flex-start; }
+        /* Bố cục 3 cột: Left Sidebar - Main Content - Right Sidebar */
+        .app-layout-container { display: flex; margin-top: 150px; padding: 0 25px 25px 25px; gap: 20px; width: 100%; align-items: flex-start; justify-content: center; }
         
-        .law-sidebar-container { width: 360px; min-width: 360px; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .law-sidebar-container.collapsed { width: 55px; min-width: 55px; }
+        .law-sidebar-container { width: 370px; min-width: 370px; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .law-sidebar-container.collapsed { width: 45px; min-width: 45px; }
         .law-sidebar-container.collapsed .law-card { display: none !important; }
+
+        .calc-sidebar-container { width: 340px; min-width: 340px; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .calc-sidebar-container.collapsed { width: 45px; min-width: 45px; }
+        .calc-sidebar-container.collapsed .law-card { display: none !important; }
         
         .btn-gold-toggle {
             width: 100%; background-color: #d4af37; color: #001f4d; 
@@ -43,16 +48,16 @@
         }
         .btn-gold-toggle:hover { background-color: #f0cb54; color: #00112c; }
         
-        .main-content-area { flex-grow: 1; transition: all 0.4s ease; min-width: 0; }
+        .main-content-area { flex-grow: 1; max-width: 900px; transition: all 0.4s ease; min-width: 0; }
         
         .main-card { background-color: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 6px 25px rgba(0,0,0,0.3); color: #212529; }
         .law-card { background-color: #002452; padding: 15px; border-radius: 12px; border: 1px solid #003b80; color: #f8f9fa; }
         
         .law-accordion-item { background-color: #001a3c; border-left: 4px solid #ffcc00; margin-bottom: 12px; border-radius: 6px; overflow: hidden; }
-        .law-accordion-header { background-color: #002d62; padding: 12px; font-weight: bold; font-size: 13.5px; color: #ffcc00; cursor: pointer; display: flex; justify-content: justify; align-items: center; transition: background 0.2s ease; border-bottom: 1px solid #003b80; text-align: justify; }
+        .law-accordion-header { background-color: #002d62; padding: 12px; font-weight: bold; font-size: 13.5px; color: #ffcc00; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s ease; border-bottom: 1px solid #003b80; text-align: left; }
         .law-accordion-header:hover { background-color: #003b80; }
         .law-accordion-body { padding: 12px; font-size: 12.5px; color: #e9ecef; text-align: justify; line-height: 1.5; white-space: pre-wrap; border-top: 1px solid #001a3c; }
-        .acc-arrow { font-size: 10px; margin-left: auto; color: #ffffff; }
+        .acc-arrow { font-size: 10px; margin-left: 10px; color: #ffffff; }
 
         .gold-badge { background-color: #d4af37 !important; color: #001f4d !important; border: 1px solid #b8860b !important; font-weight: bold !important; }
         .rate-selector-btn { border: 2px solid #d4af37; background-color: transparent; color: #d4af37; font-weight: bold; }
@@ -61,13 +66,11 @@
         
         .form-section { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 18px; border-radius: 8px; margin-bottom: 20px; }
         .dien-giai-box { background-color: #1e222b; color: #a9b2c3; padding: 20px; border-radius: 6px; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 13.5px; line-height: 1.6; max-height: 500px; overflow-y: auto; border-left: 4px solid #d4af37; }
-        .phap-ly-note { background-color: #fff3cd; border-left: 6px solid #ffc107; padding: 12px; border-radius: 4px; margin-bottom: 20px; color: #664d03; font-size: 13.5px; }
         
         .row-goc { background-color: #e2f0d9 !important; color: #385723; }
         .row-lth { background-color: #deebf7 !important; color: #1f4e78; }
         .row-lqh { background-color: #fff2cc !important; color: #7f6000; }
         .row-lct { background-color: #fce4d6 !important; color: #c65911; }
-        .row-tong { background-color: #f8d7da !important; color: #721c24; font-weight: bold; }
         
         .author-footer { text-align: center; margin-top: 40px; padding: 15px 0 35px 0; border-top: 1px solid #003b80; color: #a5bccc; font-size: 14px; }
         .footer-logo-large { height: 1.6rem; width: auto; vertical-align: middle; margin-left: 10px; }
@@ -99,97 +102,72 @@
         </button>
         
         <div class="law-card">
-            <h5 class="text-warning border-bottom pb-2 mb-3" style="font-size: 14px; font-weight: bold;">📖 THƯ VIỆN PHÁP LUẬT NGUYÊN VĂN</h5>
+            <h5 class="text-warning border-bottom pb-2 mb-3" style="font-size: 14px; font-weight: bold;">📖 THƯ VIỆN PHÁP LUẬT (NGUYÊN VĂN)</h5>
             
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    1. BLDS 2015: Trần lãi suất thỏa thuận (Khoản 1 Điều 468) <span class="acc-arrow">▼</span>
+            <div style="max-height: 70vh; overflow-y: auto; padding-right: 5px;">
+                <div class="text-white fw-bold mb-2">1. BỘ LUẬT DÂN SỰ 2015</div>
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 468. Lãi suất (Khoản 1, 2) <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"1. Lãi suất vay do các bên thỏa thuận.
+Trường hợp các bên có thỏa thuận về lãi suất thì lãi suất theo thỏa thuận không được vượt quá 20%/năm của khoản tiền vay, trừ trường hợp luật khác có liên quan quy định khác. Căn cứ tình hình thực tế và theo đề xuất của Chính phủ, Ủy ban thường vụ Quốc hội quyết định điều chỉnh mức lãi suất nói trên và báo cáo Quốc hội tại kỳ họp gần nhất.
+Trường hợp lãi suất thỏa thuận vượt quá lãi suất giới hạn được quy định tại khoản này thì mức lãi suất vượt quá không có hiệu lực.
+2. Trường hợp các bên có thỏa thuận về việc trả lãi, nhưng không xác định rõ lãi suất và có tranh chấp về lãi suất thì lãi suất được xác định bằng 50% mức lãi suất giới hạn quy định tại khoản 1 Điều này tại thời điểm trả nợ."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"1. Lãi suất vay do các bên thỏa thuận. Trường hợp các bên có thỏa thuận về lãi suất thì lãi suất theo thỏa thuận không được vượt quá 20%/năm của khoản tiền vay, trừ trường hợp luật khác có quy định khác..."</div>
-            </div>
 
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    1. BLDS 2015: Lãi suất trong hạn khi không rõ mức lãi (Khoản 2 Điều 468) <span class="acc-arrow">▼</span>
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 466. Nghĩa vụ trả nợ của bên vay (Khoản 5) <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"5. Trường hợp vay có lãi mà khi đến hạn bên vay không trả hoặc trả không đầy đủ thì bên vay phải trả lãi như sau:
+a) Lãi trên nợ gốc theo lãi suất thỏa thuận trong hợp đồng tương ứng với thời hạn vay mà đến hạn chưa trả; trường hợp chậm trả thì còn phải trả lãi theo mức lãi suất quy định tại khoản 2 Điều 468 của Bộ luật này tương ứng với thời gian chậm trả;
+b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo hợp đồng tương ứng với thời gian chậm trả, trừ trường hợp có thỏa thuận khác."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"2. Trường hợp các bên có thỏa thuận về việc trả lãi, nhưng không xác định rõ lãi suất và có tranh chấp về lãi suất thì lãi suất được xác định bằng 50% mức lãi suất giới hạn quy định tại khoản 1 Điều này tại thời điểm trả nợ."</div>
-            </div>
 
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    1. BLDS 2015: Lãi quá hạn & Chậm trả gốc lãi (Điểm a, b Khoản 5 Điều 466) <span class="acc-arrow">▼</span>
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 357. Trách nhiệm do chậm thực hiện nghĩa vụ trả tiền (Khoản 2) <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"2. Lãi suất phát sinh do chậm trả tiền được xác định theo thỏa thuận của các bên nhưng không được vượt quá mức lãi suất giới hạn quy định tại khoản 1 Điều 468 của Bộ luật này; nếu không có thỏa thuận thì thực hiện theo quy định tại khoản 2 Điều 468 của Bộ luật này."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"5. Trường hợp vay có lãi mà khi đến hạn bên vay không trả hoặc trả không đủ thì bên vay phải trả lãi như sau:
-a) Lãi trên nợ gốc theo lãi suất thỏa thuận trong hạn tương ứng với thời hạn vay mà chưa trả tại thời điểm trả nợ; nếu chậm trả thì còn phải trả lãi theo mức lãi suất quy định tại khoản 2 Điều 468 của Bộ luật này tương ứng với thời gian chậm trả;
-b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo thỏa thuận tương ứng với thời gian chậm trả, trừ trường hợp có thỏa thuận khác."</div>
-            </div>
 
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    1. BLDS 2015: Chậm thực hiện nghĩa vụ trả tiền (Khoản 2 Điều 357) <span class="acc-arrow">▼</span>
+                <div class="text-white fw-bold mb-2 mt-4">2. TỔ CHỨC TÍN DỤNG (TT 39/2016)</div>
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 13. Lãi suất cho vay <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"1. Tổ chức tín dụng và khách hàng thỏa thuận về mức lãi suất cho vay theo cung cầu vốn thị trường, nhu cầu vay vốn và mức độ tín nhiệm của khách hàng, trừ trường hợp Ngân hàng Nhà nước Việt Nam có quy định về mức lãi suất cho vay tối đa tại khoản 2 Điều này...
+3. Trường hợp áp dụng lãi suất cho vay thả nổi, tổ chức tín dụng và khách hàng phải thỏa thuận nguyên tắc và các yếu tố để xác định lãi suất thả nổi, thời điểm điều chỉnh lãi suất cho vay...
+4. Khi đến hạn thanh toán mà khách hàng không trả hoặc trả không đầy đủ nợ gốc và/hoặc lãi tiền vay theo thỏa thuận, thì khách hàng phải trả lãi tiền vay như sau:
+a) Lãi trên nợ gốc trong hạn chưa trả tương ứng với thời hạn vay chưa trả theo lãi suất cho vay đã thỏa thuận;
+b) Trường hợp khách hàng không trả đúng hạn tiền lãi theo thỏa thuận, thì phải trả lãi chậm trả theo mức lãi suất do tổ chức tín dụng và khách hàng thỏa thuận nhưng không vượt quá 10%/năm tính trên số dư lãi chậm trả tương ứng với thời gian chậm trả;
+c) Trường hợp khoản nợ vay bị chuyển nợ quá hạn, thì khách hàng phải trả lãi trên nợ gốc quá hạn tương ứng với thời gian chậm trả, mức lãi suất áp dụng không vượt quá 150% lãi suất cho vay trong hạn đã thỏa thuận tại thời điểm chuyển nợ quá hạn."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"2. Lãi suất phát sinh do chậm trả tiền được xác định theo thỏa thuận của các bên nhưng không được vượt quá mức lãi suất giới hạn quy định tại khoản 1 Điều 468 của Bộ luật này; nếu không có thỏa thuận thì thực hiện theo quy định tại khoản 2 Điều 468 của Bộ luật này."</div>
-            </div>
 
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    2. TT 39/2016: Lãi suất cho vay & Trần ngắn hạn (Điều 13) <span class="acc-arrow">▼</span>
+                <div class="text-white fw-bold mb-2 mt-4">3. HƯỚNG DẪN XÉT XỬ (NQ 01/2019/HĐTP)</div>
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 4. Áp dụng pháp luật về lãi, lãi suất <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"1. Hợp đồng vay tài sản không phải là hợp đồng tín dụng được xác lập trước ngày 01-01-2017 (ngày Bộ luật Dân sự năm 2015 bắt đầu có hiệu lực) thì việc áp dụng pháp luật về lãi, lãi suất xác định như sau: ...
+2. Hợp đồng vay tài sản không phải là hợp đồng tín dụng xác lập kể từ ngày 01-01-2017 thì áp dụng quy định của Bộ luật Dân sự năm 2015 để xác định lãi, lãi suất."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"Điều 13. Lãi suất cho vay
-1. Tổ chức tín dụng và khách hàng thỏa thuận về mức lãi suất cho vay theo cung cầu vốn thị trường, nhu cầu vay vốn và mức độ tín nhiệm của khách hàng, trừ trường hợp Ngân hàng Nhà nước Việt Nam có quy định về mức lãi suất cho vay tối đa tại khoản 2 Điều này."</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    2. TT 39/2016: Lãi suất trong hạn gốc thực tế (Điểm a Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
+                
+                <div class="law-accordion-item">
+                    <div class="law-accordion-header" onclick="toggleLawItem(this)">
+                        Điều 5. Xác định lãi, lãi suất (Trường hợp áp dụng BLDS 2015) <span class="acc-arrow">▼</span>
+                    </div>
+                    <div class="law-accordion-body" style="display: none;">"Hợp đồng vay tài sản không phải là hợp đồng tín dụng xác lập kể từ ngày 01-01-2017 hoặc xác lập trước ngày 01-01-2017 nhưng thuộc trường hợp áp dụng Bộ luật Dân sự năm 2015... thì tại thời điểm xét xử sơ thẩm, lãi, lãi suất trong hợp đồng được xác định như sau:
+...
+c) Lãi trên nợ gốc quá hạn chưa trả bằng 150% mức lãi suất vay do các bên thỏa thuận trong hợp đồng tương ứng với thời gian chậm trả, trừ trường hợp có thỏa thuận khác. Mức lãi suất trên nợ gốc quá hạn do các bên thỏa thuận không được vượt quá 150% mức lãi suất quy định tại khoản 1 Điều 468 Bộ luật Dân sự năm 2015."</div>
                 </div>
-                <div class="law-accordion-body" style="display: none;">"a) Lãi trên nợ gốc trong hạn chưa trả tương ứng với thời hạn vay chưa trả theo lãi suất cho vay đã thỏa thuận;"</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    2. TT 39/2016: Lãi suất chậm trả tiền lãi tối đa 10% (Điểm b Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
-                </div>
-                <div class="law-accordion-body" style="display: none;">"b) Trường hợp khách hàng không trả đúng hạn tiền lãi theo thỏa thuận, thì phải trả lãi chậm trả theo mức lãi suất do tổ chức tín dụng và khách hàng thỏa thuận nhưng không vượt quá 10%/năm tính trên số dư lãi chậm trả tương ứng với thời gian chậm trả;"</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    2. TT 39/2016: Lãi suất quá hạn tối đa 150% (Điểm c Khoản 4 Điều 13) <span class="acc-arrow">▼</span>
-                </div>
-                <div class="law-accordion-body" style="display: none;">"c) Trường hợp khoản nợ vay bị chuyển nợ quá hạn, thì khách hàng phải trả lãi trên nợ gốc quá hạn tương ứng với thời gian chậm trả, mức lãi suất áp dụng không vượt quá 150% lãi suất cho vay trong hạn đã thỏa thuận tại thời điểm chuyển nợ quá hạn."</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    2. TT 39/2016: Cơ chế điều chỉnh Lãi suất thả nổi (Khoản 3 Điều 13 & Điều 14) <span class="acc-arrow">▼</span>
-                </div>
-                <div class="law-accordion-body" style="display: none;">"3. Trường hợp áp dụng lãi suất cho vay thả nổi, tổ chức tín dụng và khách hàng phải thỏa thuận nguyên tắc và các yếu tố để xác định lãi suất thả nổi, thời điểm điều chỉnh lãi suất cho vay. Trường hợp ấn định các yếu tố để xác định lãi suất thả nổi dẫn đến mức lãi suất cho vay vượt quá mức lãi suất cho vay tối đa quy định tại khoản 2 Điều này thì tổ chức tín dụng và khách hàng phải thỏa thuận điều chỉnh mức lãi suất cho vay phù hợp với quy định của Ngân hàng Nhà nước Việt Nam."</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    3. NQ 01/2019: Lựa chọn hệ thống pháp luật ưu tiên (Điều 4) <span class="acc-arrow">▼</span>
-                </div>
-                <div class="law-accordion-body" style="display: none;">"Điều 4. Xác định lãi suất, phạt vi phạm trong hợp đồng chuyên ngành cụ thể để giải quyết vụ án tranh chấp hợp đồng vay tài sản."</div>
-            </div>
-
-            <div class="law-accordion-item">
-                <div class="law-accordion-header" onclick="toggleLawItem(this)">
-                    3. NQ 01/2019: Phương pháp xác định lãi suất, phạt vi phạm (Điều 5, 6, 7, 8) <span class="acc-arrow">▼</span>
-                </div>
-                <div class="law-accordion-body" style="display: none;">"Hướng dẫn chi tiết về phương pháp áp dụng cách tính toán đối với hợp đồng vay tài sản không phải là hợp đồng tín dụng; hợp đồng tín dụng; xử lý đối với trường hợp có phạt vi phạm và các trường hợp cụ thể phát sinh trong thực tế xét xử."</div>
             </div>
         </div>
     </div>
 
     <div class="main-content-area">
         <div class="main-card">
-            
-            <div class="phap-ly-note">
-                <strong>Thông tin nghiệp vụ:</strong> Hệ thống tự động bóc tách số ngày cho vay dựa trên cấu trúc lịch của năm cụ thể. Thực thi nghiêm ngặt cơ chế chuyển đổi 360 ngày/năm sang 365 ngày/năm kể từ mốc có hiệu lực của Thông tư số 14/2017/TT-NHNN ngày 01/01/2018 và các quy định khác của pháp luật.
-            </div>
-
             <form id="interestForm" onsubmit="executeCalculation(event)">
                 
                 <div class="form-section">
@@ -205,7 +183,8 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                         </div>
                         
                         <div class="col-md-6 mb-3">
-                            <label class="form-label font-weight-bold">Mức lãi suất trong hạn và đơn vị tính:</label>
+                            <label class="form-label font-weight-bold mb-1">Mức lãi suất trong hạn và đơn vị tính:</label>
+                            <div class="text-danger mb-1" style="font-size: 11px; font-weight: 500;">(Cảnh báo: Không vượt quá mức lãi suất trần 20%/năm theo Khoản 1 Điều 468 BLDS)</div>
                             <div class="input-group">
                                 <input type="number" step="0.01" class="form-control" id="lai_suat_nam" value="10" required>
                                 <div class="btn-group" role="group" style="margin-left: 5px;">
@@ -218,11 +197,11 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                             </div>
                         </div>
 
-                        <!-- YÊU CẦU 1: Thêm lựa chọn %/năm và %/tháng cho lãi suất quá hạn -->
                         <div class="col-md-6 mb-3">
-                            <label class="form-label font-weight-bold text-success">Lãi suất thỏa thuận quá hạn (Không bắt buộc):</label>
+                            <label class="form-label font-weight-bold text-success mb-1">Lãi suất thỏa thuận quá hạn (Không bắt buộc):</label>
+                            <div class="text-danger mb-1" style="font-size: 11px; font-weight: 500;">(Cảnh báo: Không vượt quá 150% lãi trần, tức tối đa 30%/năm theo NQ 01/2019/HĐTP)</div>
                             <div class="input-group">
-                                <input type="number" step="0.01" class="form-control border-success" id="lai_suat_thoa_thuan_qh" placeholder="Mặc định bằng 150% lãi trong hạn">
+                                <input type="number" step="0.01" class="form-control border-success" id="lai_suat_thoa_thuan_qh" placeholder="Mặc định = 150% lãi trong hạn">
                                 <div class="btn-group" role="group" style="margin-left: 5px;">
                                     <input type="radio" class="btn-check" name="loai_lai_suat_qh" id="unitQhNam" value="nam" checked>
                                     <label class="btn btn-outline-success rate-selector-btn" style="border-color: #198754; color: #198754;" for="unitQhNam">%/năm</label>
@@ -255,7 +234,6 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                     </div>
                 </div>
 
-                <!-- YÊU CẦU 2: Bỏ required khỏi các input trong phần II -->
                 <div class="form-section" style="border-left: 4px solid #d4af37;">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="m-0 text-dark font-weight-bold">II. BIẾN ĐỘNG LÃI SUẤT THẢ NỔI THEO TỪNG THỜI KỲ <span class="text-muted fw-normal" style="font-size: 12px;">(Không bắt buộc)</span></h6>
@@ -264,7 +242,6 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                     <div id="floating-container"></div>
                 </div>
 
-                <!-- YÊU CẦU 2: Bỏ required khỏi các input trong phần III -->
                 <div class="form-section" style="border-left: 4px solid #198754;">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="m-0 text-dark font-weight-bold">III. NHẬT KÝ ĐÃ TRẢ TRƯỚC MỘT PHẦN GỐC / LÃI (ĐỐI TRỪ CÔNG NỢ) <span class="text-muted fw-normal" style="font-size: 12px;">(Không bắt buộc)</span></h6>
@@ -274,7 +251,6 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                 </div>
 
                 <div class="form-section">
-                    <!-- YÊU CẦU 3: Sửa text label -->
                     <h6 class="mb-3 text-primary font-weight-bold">IV. NGÀY TẤT TOÁN KHOẢN VAY (NGÀY XÉT XỬ)</h6>
                     <div class="row">
                         <div class="col-md-12 mb-2">
@@ -298,8 +274,6 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                     <a id="excelDownloadBtn" href="#" class="btn btn-sm btn-success" download>📥 Tải Bảng Tính Excel Phụ Lục</a>
                 </div>
                 
-                <p class="text-muted small mb-2">Tổng số ngày chạy mô phỏng kiểm sát: <strong id="lblTotalDays">0</strong> ngày.</p>
-
                 <table class="table table-bordered text-end align-middle small shadow-sm">
                     <thead class="table-dark text-center" style="background-color: #002d62;">
                         <tr>
@@ -326,15 +300,57 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                             <td class="text-start">4. Lãi chậm trả tích lũy (trên lãi)</td>
                             <td id="cell_lct_m">0 VNĐ</td><td id="cell_lct_y">0 VNĐ</td><td id="cell_lct_t">0 VNĐ</td>
                         </tr>
-                        <tr class="row-tong">
-                            <td class="text-start text-uppercase">Tổng nghĩa vụ tài chính chốt sau đối trừ</td>
-                            <td id="cell_tong_m">0 VNĐ</td><td id="cell_tong_y">0 VNĐ</td><td id="cell_tong_t">0 VNĐ</td>
+                        
+                        <tr class="row-tong border-top border-2 border-dark" style="background-color: #f8d7da;">
+                            <td class="text-start text-uppercase text-danger fw-bold">Tổng nghĩa vụ tài chính chốt sau đối trừ</td>
+                            <td class="text-muted text-center">-</td>
+                            <td class="text-muted text-center">-</td>
+                            <td id="cell_tong_t" class="fs-6 fw-bold text-danger">0 VNĐ</td>
+                        </tr>
+                        <tr style="background-color: #e9ecef;">
+                            <td class="text-start text-dark fst-italic fw-bold">► Trung bình / kỳ hạn (Tham khảo)</td>
+                            <td id="cell_tb_m" class="fw-bold text-dark">0 VNĐ</td>
+                            <td id="cell_tb_y" class="fw-bold text-dark">0 VNĐ</td>
+                            <td class="text-muted text-center">-</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <h5 class="mt-3 text-dark font-weight-bold" style="font-size: 1rem;">BÁO CÁO DIỄN GIẢI CHI TIẾT (ĐẾN ĐƠN VỊ THÁNG)</h5>
                 <div class="dien-giai-box" id="dienGiaiText"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="calc-sidebar-container" id="calcSidebarContainer">
+        <button type="button" id="toggleCalcBtn" class="btn-gold-toggle" onclick="toggleCalcSidebar()">
+            LỊCH QUY ĐỔI ▶
+        </button>
+        
+        <div class="law-card">
+            <h5 class="text-warning border-bottom pb-2 mb-3" style="font-size: 14px; font-weight: bold;">📅 QUY ĐỔI SỐ NGÀY THÁNG NĂM VÀO LỊCH</h5>
+            
+            <div class="mb-3">
+                <label class="form-label text-white" style="font-size: 13px;">Ngày bắt đầu đếm:</label>
+                <input type="date" class="form-control form-control-sm border-warning" id="calc_start_date" onchange="calculateEndDate()">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label text-white" style="font-size: 13px;">Cộng thêm (Năm / Tháng / Ngày):</label>
+                <div class="input-group input-group-sm">
+                    <input type="number" class="form-control text-center" id="calc_years" placeholder="Số Năm" value="0" min="0" oninput="calculateEndDate()">
+                    <input type="number" class="form-control text-center" id="calc_months" placeholder="Số Tháng" value="0" min="0" oninput="calculateEndDate()">
+                    <input type="number" class="form-control text-center" id="calc_days" placeholder="Số Ngày" value="0" min="0" oninput="calculateEndDate()">
+                </div>
+            </div>
+            
+            <div class="mt-4 mb-3 p-3" style="background-color: #001a3c; border: 1px solid #d4af37; border-radius: 6px;">
+                <div class="text-warning fw-bold text-center" style="font-size: 13px;">KẾT QUẢ NGÀY ĐÁO HẠN</div>
+                <div class="text-white fw-bold fs-4 text-center mt-2" id="calc_result_date">--/--/----</div>
+            </div>
+            
+            <div class="mt-3 text-justify border-top border-secondary pt-3" style="font-size: 11.5px; color: #a5bccc;">
+                <strong>Lưu ý:</strong> Việc quy đổi bằng công cụ này được tự động cộng dồn theo lịch chuẩn quốc tế (bao gồm năm nhuận, tháng thiếu). Khi áp dụng vào công thức tính lãi ở bảng tính bên cạnh, phần mềm sẽ tự động quy đổi thành 360 ngày/năm (trước 01/01/2018) và 365 ngày/năm (sau 01/01/2018) tuân thủ nghiêm ngặt <strong>Thông tư 14/2017/TT-NHNN</strong>.
             </div>
         </div>
     </div>
@@ -354,6 +370,7 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
 </div>
 
 <script>
+    // Điều khiển đóng mở Accordion Luật
     function toggleLawItem(element) {
         const body = element.nextElementSibling;
         const arrow = element.querySelector('.acc-arrow');
@@ -366,6 +383,7 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
         }
     }
 
+    // Trượt ẩn/hiện Sidebar Luật bên trái
     function toggleLawSidebar() {
         const container = document.getElementById('lawSidebarContainer');
         const btn = document.getElementById('toggleLawBtn');
@@ -377,7 +395,61 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
         }
     }
 
-    // YÊU CẦU 2: Bỏ thuộc tính required trong các hàng được thêm động ở phần II và III
+    // Trượt ẩn/hiện Sidebar Lịch tính toán bên phải
+    function toggleCalcSidebar() {
+        const container = document.getElementById('calcSidebarContainer');
+        const btn = document.getElementById('toggleCalcBtn');
+        container.classList.toggle('collapsed');
+        if (container.classList.contains('collapsed')) {
+            btn.innerHTML = "◀ LỊCH";
+        } else {
+            btn.innerHTML = "LỊCH QUY ĐỔI ▶";
+        }
+    }
+
+    // CÔNG CỤ TÍNH TOÁN NGÀY THÁNG ĐÁO HẠN THEO LỊCH THỰC TẾ
+    function calculateEndDate() {
+        const startDateVal = document.getElementById('calc_start_date').value;
+        const years = parseInt(document.getElementById('calc_years').value) || 0;
+        const months = parseInt(document.getElementById('calc_months').value) || 0;
+        const days = parseInt(document.getElementById('calc_days').value) || 0;
+        
+        if (!startDateVal) {
+            document.getElementById('calc_result_date').innerText = "--/--/----";
+            return;
+        }
+        
+        let d = new Date(startDateVal);
+        let targetMonth = d.getMonth() + months;
+        let targetYear = d.getFullYear() + years;
+        
+        // Xử lý cộng dồn vượt tháng thành năm
+        targetYear += Math.floor(targetMonth / 12);
+        targetMonth = targetMonth % 12;
+        
+        // Xử lý chống tràn ngày (VD: 31/01 + 1 tháng = 28/02)
+        let targetDay = d.getDate();
+        let maxDaysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        if (targetDay > maxDaysInTargetMonth) {
+            targetDay = maxDaysInTargetMonth;
+        }
+        
+        d.setFullYear(targetYear);
+        d.setMonth(targetMonth);
+        d.setDate(targetDay);
+        
+        // Cộng tiếp số ngày thừa
+        d.setDate(d.getDate() + days);
+        
+        // Định dạng xuất ra DD/MM/YYYY
+        const dayStr = String(d.getDate()).padStart(2, '0');
+        const monthStr = String(d.getMonth() + 1).padStart(2, '0');
+        const yearStr = d.getFullYear();
+        
+        document.getElementById('calc_result_date').innerText = `${dayStr}/${monthStr}/${yearStr}`;
+    }
+
+    // Các hàm thêm cột thả nổi và đối trừ
     function addFloatingRateRow() {
         const container = document.getElementById('floating-container');
         const div = document.createElement('div');
@@ -414,6 +486,7 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
         return parseFloat(val).toLocaleString('vi-VN') + " VNĐ";
     }
 
+    // Gửi API tính toán lên máy chủ
     function executeCalculation(event) {
         event.preventDefault();
 
@@ -436,13 +509,15 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
             });
         });
 
-        // YÊU CẦU 1: Gửi thêm đơn vị lãi suất quá hạn lên server
+        const qh_checked = document.querySelector('input[name="loai_lai_suat_qh"]:checked');
+        const loai_qh = qh_checked ? qh_checked.value : 'nam';
+
         const payload = {
             so_tien_vay: document.getElementById('so_tien_vay').value,
             lai_suat_nam: document.getElementById('lai_suat_nam').value,
             loai_lai_suat: document.querySelector('input[name="loai_lai_suat"]:checked').value,
             lai_suat_thoa_thuan_qh: document.getElementById('lai_suat_thoa_thuan_qh').value,
-            loai_lai_suat_qh: document.querySelector('input[name="loai_lai_suat_qh"]:checked').value,
+            loai_lai_suat_qh: loai_qh,
             phuong_thuc: document.getElementById('phuong_thuc').value,
             thoi_han_nam: document.getElementById('thoi_han_nam').value,
             thoi_han_thang: document.getElementById('thoi_han_thang').value,
@@ -482,9 +557,10 @@ b) Lãi trên nợ gốc quá hạn chưa trả bằng 150% lãi suất vay theo
                 document.getElementById('cell_lct_y').innerText = formatVND(matrix.lct.nam);
                 document.getElementById('cell_lct_t').innerText = formatVND(matrix.lct.tong);
                 
-                document.getElementById('cell_tong_m').innerText = formatVND(matrix.tong.thang);
-                document.getElementById('cell_tong_y').innerText = formatVND(matrix.tong.nam);
+                // Cập nhật giao diện bảng tổng mới
                 document.getElementById('cell_tong_t').innerText = formatVND(matrix.tong.tong);
+                document.getElementById('cell_tb_m').innerText = formatVND(matrix.tb_ky_han.thang);
+                document.getElementById('cell_tb_y').innerText = formatVND(matrix.tb_ky_han.nam);
                 
                 document.getElementById('dienGiaiText').innerText = resData.dien_giai;
                 document.getElementById('excelDownloadBtn').href = resData.excel_url;
